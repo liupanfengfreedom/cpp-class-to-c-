@@ -55,3 +55,36 @@ public class script : MonoBehaviour
     public static extern  int releasedllclass(IntPtr p);
 
 }
+// C# wrap 
+public class SomeNativeObject
+{
+    private IntPtr m_NativeObject = IntPtr.Zero;
+    public SomeNativeObject()
+    {
+        m_NativeObject = Internal_CreateNativeObject();
+    }
+    ~SomeNativeObject()
+    {
+        Destroy();
+    }
+    public void Destroy()
+    {
+        if (m_NativeObject != IntPtr.Zero)
+        {
+            Internal_DestroyNativeObject(m_NativeObject);
+            m_NativeObject = IntPtr.Zero;
+        }
+    }
+    public void SomeNativeMethod(int SomeParameter)
+    {
+        if (m_NativeObject == IntPtr.Zero)
+            throw new Exception("No native object");
+        Internal_SomeNativeMethod(m_NativeObject, SomeParameter);
+    }
+    [DllImport("YourDLL")]
+    private static extern IntPtr Internal_CreateNativeObject();
+    [DllImport("YourDLL")]
+    private static extern Internal_DestroyNativeObject(IntPtr obj);
+    [DllImport("YourDLL")]
+    private static extern void Internal_SomeNativeMethod(IntPtr obj, int SomeParameter);
+}
